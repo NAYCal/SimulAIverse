@@ -28,15 +28,17 @@ class Entity:
         self.movable_tiles = movable_tiles
         self.current_tile = None
 
-    def add_to_world(self, tile):
-        if not self.is_movable(tile):
-            return False
+    def next(self, world, x, y):
+        """
+        Performs the next action of the entity.
 
-        self.current_tile = tile
-        self.interact_with_tile(tile)
+        :param world: The world state that the entity is located in.
+        :param x: The x-coordinates the entity will be.
+        :param y: The y-coordinate the entity will be.
+        :return: The new world state.
+        """
 
-    def interact_with_tile(self, tile):
-        x = 1 + 1
+        return world
 
     def is_movable(self, tile):
         """

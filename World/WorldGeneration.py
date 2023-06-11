@@ -13,18 +13,17 @@ class WorldGeneration:
         - random_seed (int, optional): The random seed used for world generation. If not provided,
           a random seed between 0 and 9999 will be selected.
         - tile_set (list, optional): The tile set to be used for world generation. If not provided,
-          a default tile set containing walls and floors will be used.
+          a default tile set containing empty space, walls and floors will be used.
         """
         if random_seed is None:
             random_seed = random.randint(0, 9999)
         if tile_set is None:
-            tile_set = [TileSets.WALL, TileSets.FLOOR]
+            tile_set = [TileSets.EMPTY_SPACE, TileSets.WALL, TileSets.FLOOR]
         self.HEIGHT = height
         self.WIDTH = width
         self.random_seed = random_seed
         self.random = random.Random(random_seed)
         self.tile_set = tile_set
-        self.tile_set.insert(0, TileSets.EMPTY_SPACE)
 
     def generate(self):
         """
