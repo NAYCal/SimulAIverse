@@ -12,6 +12,8 @@ model and the agent model should be adaptable to different terrains and actions,
 * Additionally, it's important for the project to have a user-friendly graphical user interface (GUI) that is visually
 appealing. After all, aesthetics do matter!
 
+![simAiverse.jpeg](..%2Fimages%2FsimAiverse.jpg)
+
 ## Project Overview
 The goal of this project is to develop a simulation program that enables the analysis of how different AI models 
 interact with diverse environments. The program aims to provide a seamless switching capability between various models,
