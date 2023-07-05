@@ -10,6 +10,9 @@ class ModelInterface(ABC):
 
 
 class Model(ModelInterface):
+    def __init__(self):
+        self.path = None
+
     def next(self, start_state: State) -> {}:
         queue = []
         visited = {}
@@ -33,4 +36,26 @@ class Model(ModelInterface):
             path.insert(0, end_state)
             end_state = visited.get(end_state)
 
+        self.path = path
         return path
+
+    def __iter__(self):
+        return self.Iterator(self.path)
+
+    class Iterator:
+        """
+        Allows easy retrieval for found path.
+        """
+        def __init__(self, path):
+            self.path = path
+            self.index = 0
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            if self.index >= len(self.path):
+                raise StopIteration
+            state = self.path[self.index]
+            self.index += 1
+            return state
