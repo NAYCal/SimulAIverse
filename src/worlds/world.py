@@ -1,5 +1,6 @@
 import random
 
+from src.agents.agent import Agent
 from src.states.state import State
 
 
@@ -9,12 +10,16 @@ class World:
         self.walls = set()
         self.resources = set()
         self.states = {}
+        self.agents = {}
 
     def add_state(self, state):
         self.states[state.name] = state
 
     def get_state(self, state_name) -> State:
         return self.states[state_name]
+
+    def add_agent(self, agent: Agent):
+        self.agents[agent.id] = agent
 
     def get_initial_state(self) -> State:
         return self.states["initial"]
