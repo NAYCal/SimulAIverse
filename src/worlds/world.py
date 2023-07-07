@@ -1,49 +1,49 @@
 import random
-from abc import ABC, abstractmethod
-from typing import Callable
+
+from src.states.state import State
 
 
-class WorldInterface(ABC):
-    @abstractmethod
-    def generate(self):
-        pass
-
-
-class World(WorldInterface):
-    """
-    World generates a basic square world based on input size, tiles, seed, generate_fn.
-    """
-
-    def __init__(self, size: int, tiles=None, seed: int = 0, generate_fn: Callable = None):
-        if tiles is None:
-            tiles = [i for i in range(10)]
-
-        if generate_fn is None:
-            generate_fn = lambda i, j, world_size: random.choice(tiles)
-
+class World:
+    def __init__(self, size):
         self.size = size
-        self.seed = seed
-        self.tiles = tiles
-        self.generate_fn = generate_fn
-        random.seed(self.seed)
+        self.walls = set()
+        self.resources = set()
+        self.states = {}
+
+    def add_state(self, state):
+        self.states[state.name] = state
+
+    def get_state(self, state_name) -> State:
+        return self.states[state_name]
+
+    def get_initial_state(self) -> State:
+        return self.states["initial"]
 
     def generate(self):
-        grid = [[None] * self.size] * self.size
-
+        # Create walls
         for i in range(self.size):
-            for j in range(self.size):
-                grid[i][j] = self.generate_fn(i, j, self.size)
+            self.walls.add((i, 0))
+            self.walls.add((i, self.size - 1))
+            self.walls.add((0, i))
+            self.walls.add((self.size - 1, i))
 
-        return grid
+        # Create resources
+        num_resources = random.randint(1, 5)
+        self.resources = set()
+        for _ in range(num_resources):
+            resource_pos = (random.randint(1, self.size - 2), random.randint(1, self.size - 2))
+            self.resources.add(resource_pos)
 
-    def main(self):
-        grid = self.generate()
-        for i in range(self.size):
-            for j in range(self.size):
-                print(grid[i][j], end='  ')
-            print()
+    def is_empty(self) -> bool:
+        return len(self.resources) == 0
 
+    def reset(self):
+        self.resources = set()
 
-if __name__ == "__main__":
-    world = World(size=5)
-    world.main()
+    def get_neighbor(self, position) -> []:
+        x, y = position
+        neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
+        valid_neighbors = [(nx, ny) for nx, ny in neighbors if
+                           0 <= nx < self.size and 0 <= ny < self.size and (nx, ny) not in self.walls]
+
+        return valid_neighbors

@@ -1,7 +1,9 @@
-from abc import ABC, abstractmethod
+class Agent:
+    def perform_action(self):
+        pass
 
+    def perform_utility_action(self):
+        pass
 
-class Agent(ABC):
-    @abstractmethod
-    def next(self):
+    def transition_state(self):
         pass
