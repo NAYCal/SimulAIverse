@@ -6,17 +6,10 @@ from src.states.state import State
 
 class World:
     def __init__(self, size):
+        self.walls = None
         self.size = size
-        self.walls = set()
-        self.resources = set()
-        self.states = {}
         self.agents = {}
-
-    def add_state(self, state):
-        self.states[state.name] = state
-
-    def get_state(self, state_name) -> State:
-        return self.states[state_name]
+        self.states = None
 
     def add_agent(self, agent: Agent):
         self.agents[agent.id] = agent
@@ -32,6 +25,12 @@ class World:
             self.walls.add((0, i))
             self.walls.add((self.size - 1, i))
 
+        self.reset_resources()
+
+    def is_empty(self) -> bool:
+        return len(self.resources) == 0
+
+    def reset_resources(self):
         # Create resources
         num_resources = random.randint(1, 5)
         self.resources = set()
@@ -39,13 +38,7 @@ class World:
             resource_pos = (random.randint(1, self.size - 2), random.randint(1, self.size - 2))
             self.resources.add(resource_pos)
 
-    def is_empty(self) -> bool:
-        return len(self.resources) == 0
-
-    def reset(self):
-        self.resources = set()
-
-    def get_neighbor(self, position) -> []:
+    def get_neighbors(self, position) -> []:
         x, y = position
         neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
         valid_neighbors = [(nx, ny) for nx, ny in neighbors if
