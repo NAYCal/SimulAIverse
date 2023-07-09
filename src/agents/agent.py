@@ -1,18 +1,13 @@
-from src.states.state import State
+from src.states.state_manager import StateManager
 
 
 class Agent:
-    def __init__(self, agent_id: int):
+    def __init__(self, agent_id: int, agent_states: StateManager):
         self.id = agent_id
-
-    def set_initial_state(self):
-        pass
+        self.states = agent_states
 
     def perform_action(self):
         pass
 
     def perform_utility_action(self):
-        pass
-
-    def transition_state(self):
         pass

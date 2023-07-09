@@ -1,3 +1,4 @@
+from src.models.model import Model
 from src.states.state import State
 from src.worlds.world import World
 
@@ -7,10 +8,12 @@ class AgentState(State):
     The base class for states regarding agents.
     """
 
-    def __init__(self, name):
+    def __init__(self, name,  state_properties: {}, model: Model):
         super().__init__(name)
+        self.state_resource = state_properties
+        self.model = model
 
-    def perform_action(self, world: World):
+    def perform_action(self, world: World) -> {}:
         """
         Takes in the world object and performs the agent's action based on its current state. Instead of directly
         modifying the world object, it returns a map or object that represents the changes made by the agent's action.
@@ -21,7 +24,7 @@ class AgentState(State):
         """
         pass
 
-    def perform_utility_action(self, world: World):
+    def perform_utility_action(self, world: World) -> {}:
         """
         Takes in the world object and performs any utility actions specific to the agent based on its current state.
         Similar to perform_action, it can return a map or object representing the changes made by the utility action.
@@ -32,13 +35,14 @@ class AgentState(State):
         """
         pass
 
-    def transition_state(self):
+    def transition_state(self) -> ():
         """
         This function allows the agent to evaluate its current state, consider any relevant properties, and decide
         which state to transition to based on the defined transition rules.
-        :return: The next state agent should be in.
+        :return: A tuple where the first object is the name of the next state based on data, and other properties to be
+        passed.
         """
-        super().transition_state()
+        return super().transition_state()
 
 
 class SearchState(AgentState):
