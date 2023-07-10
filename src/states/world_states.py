@@ -1,3 +1,7 @@
+import random
+
+from src.containers.container import Container
+from src.containers.containerFactory import ContainerFactory
 from src.states.state import State
 
 
@@ -8,7 +12,7 @@ class WorldState(State):
 
     def __init__(self, name, state_resources: {}, *args):
         super().__init__(name)
-        self.state_properties = state_resources
+        self.state_resources = state_resources
 
     def perform_action(self, *args):
         """
@@ -39,6 +43,9 @@ class WorldState(State):
         """
         return super().transition_state()
 
+    def get_resources(self):
+        return self.state_resources
+
 
 def default_generate_fn(x, y, size):
     if x == 0 or x == size - 1:
@@ -64,11 +71,48 @@ class GenerateState(WorldState):
     def perform_action(self):
         return [[self.generate_fn(x, y, self.size) for y in range(self.size)] for x in range(self.size)]
 
-    def perform_utility_action(self, properties: {}, *args) -> {}:
-        return super().perform_utility_action(properties, *args)
+    def perform_utility_action(self, new_state_resources: dict, grid=None, is_replace=None, resource_placement_fn=None):
+        """
+        Adds resources onto the map destructively.
+
+        :param new_state_resources: The new values of resources in the world. This assumes that the input resources are
+        stored in the Container class, otherwise, random coordinates are generated for the resources
+        :param grid: Optional. The format that stores the world grid. If not provided, it is generated using
+        'perform_action()'.
+        :param is_replace: Optional. A function that determines if resources in a tile can be replaced. Default is
+        'lambda x, y, size, world_grid, new_value: True'.
+        :param resource_placement_fn: Optional. A function that replaces the current tile. Default is 'lambda x, y,
+        size, world_grid, new_value: new_value'.
+        :return: A map of properties after handling the input properties.
+        """
+        # Set default values for optional parameters if not provided
+        if grid is None:
+            grid = self.perform_action()
+        if is_replace is None:
+            is_replace = lambda x, y, size, world_grid, new_value: True
+        if resource_placement_fn is None:
+            resource_placement_fn = lambda x, y, size, world_grid, new_value: new_value
+
+        max_attempts = self.size * self.size // len(new_state_resources)
+
+        for resource in new_state_resources.items():
+            name, x, y, value = ContainerFactory.open_container(resource, self.size)
+            attempts = 0
+
+            while not is_replace(x, y, self.size, grid, value) and attempts < max_attempts:
+                name, x, y, value = ContainerFactory.open_container(resource, self.size)
+                attempts += 1
+
+            if attempts >= max_attempts:
+                raise Exception("Unable to find a suitable tile for resource placement.")
+
+            grid[x][y] = resource_placement_fn(x, y, self.size, grid, value)
+            self.state_resources.add(name, value)
+
+        return self.state_resources
 
     def transition_state(self) -> ():
-        return ActiveState, self.state_properties
+        return ActiveState, self.state_resources
 
 
 class ResetState(WorldState):
@@ -76,6 +120,9 @@ class ResetState(WorldState):
     Represents a state where the world is reset, clearing any existing state or data, and preparing for a new round
     or iteration.
     """
+
+    def transition_state(self) -> ():
+        return GenerateState, self.state_resources
 
 
 class ActiveState(WorldState):
