@@ -20,15 +20,24 @@ def create_mock_container(name, x, y, value):
 
 class TestGenerateState(TestCase):
     def test_perform_action(self):
-        state = GenerateState("Test State", {})
+        state = GenerateState("Test GenerateState", {})
         result = state.perform_action()
 
         self.assertEqual(len(result), state.size)
         for row in result:
             self.assertEqual(len(row), state.size)
 
-    def test_perform_utility_action(self):
-        pass
+    def test_perform_utility_action_no_container(self):
+        state = GenerateState("Test GenerateState", {})
+        expected_result = {"fruit": 1, "fly": 1}
+        grid = state.perform_action()
+
+        input_state_resources = {"fruit": 0, "fly": 1}
+        test_result = state.perform_utility_action(input_state_resources)
+
+    def test_perform_utility_action_with_container(self):
+        state = GenerateState("Test GenerateState", {})
+        grid = state.perform_action()
 
     def test_transition_state(self):
         self.fail()

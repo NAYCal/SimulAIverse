@@ -1,6 +1,3 @@
-import random
-
-from src.containers.container import Container
 from src.containers.containerFactory import ContainerFactory
 from src.states.state import State
 
@@ -71,6 +68,7 @@ class GenerateState(WorldState):
     def perform_action(self):
         return [[self.generate_fn(x, y, self.size) for y in range(self.size)] for x in range(self.size)]
 
+# TODO: Adjust for change of container format
     def perform_utility_action(self, new_state_resources: dict, grid=None, is_replace=None, resource_placement_fn=None):
         """
         Adds resources onto the map destructively.
@@ -89,9 +87,9 @@ class GenerateState(WorldState):
         if grid is None:
             grid = self.perform_action()
         if is_replace is None:
-            is_replace = lambda x, y, size, world_grid, new_value: True
+            is_replace = lambda x_coord, y_coord, size, world_grid, new_value: True
         if resource_placement_fn is None:
-            resource_placement_fn = lambda x, y, size, world_grid, new_value: new_value
+            resource_placement_fn = lambda x_coord, y_coord, size, world_grid, new_value: new_value
 
         max_attempts = self.size * self.size // len(new_state_resources)
 
@@ -107,7 +105,7 @@ class GenerateState(WorldState):
                 raise Exception("Unable to find a suitable tile for resource placement.")
 
             grid[x][y] = resource_placement_fn(x, y, self.size, grid, value)
-            self.state_resources.add(name, value)
+            self.state_resources[name] = self.state_resources.get(name, 0) + 1
 
         return self.state_resources
 
